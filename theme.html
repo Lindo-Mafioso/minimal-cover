@@ -6,23 +6,16 @@
 
   <style>
 
-    /* =========================
-       BASE
-    ========================= */
-
     * {
       box-sizing: border-box;
     }
-
 
     html,
     body {
       width: 100%;
       height: 100%;
-
       margin: 0;
       padding: 0;
-
       overflow: hidden;
 
       background: #000;
@@ -57,7 +50,7 @@
 
       filter:
         blur(55px)
-        saturate(135%);
+        saturate(125%);
 
       transform: scale(1.08);
 
@@ -76,14 +69,13 @@
 
     #background-overlay {
       position: fixed;
-
       inset: 0;
 
       background:
         linear-gradient(
           180deg,
-          rgba(0, 0, 0, 0.28),
-          rgba(0, 0, 0, 0.60)
+          rgba(0, 0, 0, 0.30),
+          rgba(0, 0, 0, 0.62)
         );
 
       z-index: 1;
@@ -96,7 +88,6 @@
 
     #vignette {
       position: fixed;
-
       inset: 0;
 
       pointer-events: none;
@@ -104,8 +95,8 @@
       background:
         radial-gradient(
           ellipse at center,
-          transparent 18%,
-          rgba(0, 0, 0, 0.40) 100%
+          transparent 20%,
+          rgba(0, 0, 0, 0.38) 100%
         );
 
       z-index: 2;
@@ -118,14 +109,12 @@
 
     #player {
       position: relative;
-
       z-index: 3;
 
       width: 100%;
       height: 100%;
 
       display: flex;
-
       flex-direction: column;
 
       align-items: center;
@@ -137,8 +126,7 @@
 
       opacity: 0;
 
-      transform:
-        translateY(8px);
+      transform: translateY(8px);
 
       transition:
         opacity 0.4s ease,
@@ -148,14 +136,13 @@
 
     #player.visible {
       opacity: 1;
-
-      transform:
-        translateY(0);
+      transform: translateY(0);
     }
 
 
     /* =========================
-       LIQUID GLASS — SHINY
+       LIQUID GLASS
+       VERSION ÉQUILIBRÉE
     ========================= */
 
     .glass {
@@ -164,69 +151,56 @@
       overflow: hidden;
 
       /*
-        Plusieurs couches créent
-        une impression de profondeur.
+        Base sombre et translucide.
+        On garde les couleurs
+        du fond visibles.
       */
 
       background:
-
         linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.14) 0%,
-          rgba(255, 255, 255, 0.065) 28%,
-          rgba(255, 255, 255, 0.025) 55%,
-          rgba(255, 255, 255, 0.07) 100%
+          145deg,
+          rgba(255, 255, 255, 0.095),
+          rgba(255, 255, 255, 0.025)
         );
 
-      /*
-        Le fond reste visible
-        mais paraît déformé / diffus.
-      */
-
       backdrop-filter:
-        blur(30px)
-        saturate(155%)
-        brightness(1.08);
+        blur(28px)
+        saturate(140%);
 
       -webkit-backdrop-filter:
-        blur(30px)
-        saturate(155%)
-        brightness(1.08);
+        blur(28px)
+        saturate(140%);
 
       /*
-        Bord lumineux du verre.
+        Bord légèrement plus lumineux.
       */
 
       border:
-
         1px solid
-        rgba(255, 255, 255, 0.28);
+        rgba(255, 255, 255, 0.22);
 
       /*
-        Profondeur extérieure
-        + lumière intérieure.
+        Ombre + lumière interne.
       */
 
       box-shadow:
 
-        0 20px 50px
-        rgba(0, 0, 0, 0.48),
-
-        0 4px 16px
-        rgba(0, 0, 0, 0.18),
+        0 18px 45px
+        rgba(0, 0, 0, 0.52),
 
         inset
-        0 1px 1px
-        rgba(255, 255, 255, 0.34),
+        0 1px 0
+        rgba(255, 255, 255, 0.16),
 
         inset
-        0 -1px 1px
-        rgba(255, 255, 255, 0.035);
+        0 -1px 0
+        rgba(0, 0, 0, 0.12);
     }
 
 
     /* =========================
-       GRAND REFLET SUPÉRIEUR
+       REFLET SUPÉRIEUR
+       TRÈS SUBTIL
     ========================= */
 
     .glass::before {
@@ -234,27 +208,21 @@
 
       position: absolute;
 
-      top: -45%;
-      left: -20%;
+      top: 0;
+      left: 0;
 
-      width: 140%;
-      height: 90%;
+      width: 100%;
+      height: 42%;
 
       pointer-events: none;
 
-      border-radius: 50%;
-
       background:
-
-        radial-gradient(
-          ellipse at center,
-          rgba(255, 255, 255, 0.18) 0%,
-          rgba(255, 255, 255, 0.075) 28%,
-          transparent 68%
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.09),
+          rgba(255, 255, 255, 0.025),
+          transparent
         );
-
-      filter:
-        blur(10px);
 
       opacity: 0.8;
 
@@ -263,7 +231,8 @@
 
 
     /* =========================
-       REFLET DIAGONAL
+       REFLET LATÉRAL
+       DONNE L'EFFET SHINY
     ========================= */
 
     .glass::after {
@@ -271,29 +240,26 @@
 
       position: absolute;
 
-      inset: 0;
+      top: 0;
+      left: -30%;
+
+      width: 55%;
+      height: 100%;
 
       pointer-events: none;
 
-      border-radius: inherit;
+      transform:
+        skewX(-18deg);
 
       background:
-
         linear-gradient(
-          125deg,
-
-          rgba(255, 255, 255, 0.16) 0%,
-
-          rgba(255, 255, 255, 0.045) 18%,
-
-          transparent 40%,
-
-          rgba(255, 255, 255, 0.025) 70%,
-
-          rgba(255, 255, 255, 0.09) 100%
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.045),
+          transparent
         );
 
-      opacity: 0.7;
+      opacity: 0.75;
 
       z-index: 1;
     }
@@ -305,20 +271,17 @@
 
     .glass > * {
       position: relative;
-
       z-index: 2;
     }
 
 
     /* =========================
        PANNEAU POCHETTE
-       PROPORTIONS COMPACTES
+       PROPORTIONS D'AVANT
     ========================= */
 
     #artwork-panel {
-      width:
-        min(27vw, 310px);
-
+      width: min(27vw, 310px);
       aspect-ratio: 1 / 1;
 
       padding: 18px;
@@ -326,7 +289,6 @@
       border-radius: 30px;
 
       display: flex;
-
       align-items: center;
       justify-content: center;
     }
@@ -348,29 +310,21 @@
 
       opacity: 0;
 
-      transform:
-        scale(0.98);
+      transform: scale(0.98);
 
       transition:
         opacity 0.4s ease,
         transform 0.4s ease;
 
       box-shadow:
-
-        0 14px 32px
-        rgba(0, 0, 0, 0.52),
-
-        inset
-        0 1px 0
-        rgba(255, 255, 255, 0.10);
+        0 10px 25px
+        rgba(0, 0, 0, 0.50);
     }
 
 
     #artwork.loaded {
       opacity: 1;
-
-      transform:
-        scale(1);
+      transform: scale(1);
     }
 
 
@@ -379,8 +333,7 @@
     ========================= */
 
     #info-panel {
-      width:
-        min(27vw, 310px);
+      width: min(27vw, 310px);
 
       border-radius: 26px;
 
@@ -411,13 +364,10 @@
       line-height: 1.2;
 
       white-space: nowrap;
-
       overflow: hidden;
-
       text-overflow: ellipsis;
 
       text-shadow:
-
         0 2px 12px
         rgba(0, 0, 0, 0.28);
     }
@@ -431,27 +381,14 @@
       margin-top: 6px;
 
       color:
-
-        rgba(
-          255,
-          255,
-          255,
-          0.68
-        );
+        rgba(255, 255, 255, 0.62);
 
       font-size:
         clamp(14px, 1.1vw, 17px);
 
       white-space: nowrap;
-
       overflow: hidden;
-
       text-overflow: ellipsis;
-
-      text-shadow:
-
-        0 2px 10px
-        rgba(0, 0, 0, 0.20);
     }
 
 
@@ -461,7 +398,6 @@
 
     #progress-container {
       margin-top: 18px;
-
       width: 100%;
     }
 
@@ -475,21 +411,9 @@
       border-radius: 999px;
 
       background:
-
-        rgba(
-          255,
-          255,
-          255,
-          0.20
-        );
+        rgba(255, 255, 255, 0.20);
 
       overflow: visible;
-
-      box-shadow:
-
-        inset
-        0 1px 2px
-        rgba(0, 0, 0, 0.20);
     }
 
 
@@ -500,17 +424,7 @@
       border-radius: inherit;
 
       background:
-
-        linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0.78),
-          rgba(255, 255, 255, 1)
-        );
-
-      box-shadow:
-
-        0 0 8px
-        rgba(255, 255, 255, 0.22);
+        rgba(255, 255, 255, 0.92);
 
       transition:
         width 0.4s linear;
@@ -523,28 +437,18 @@
       top: 50%;
       left: 0%;
 
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
 
       border-radius: 50%;
 
-      background:
-
-        linear-gradient(
-          135deg,
-          #fff,
-          rgba(255, 255, 255, 0.78)
-        );
+      background: #fff;
 
       transform:
         translate(-50%, -50%);
 
       box-shadow:
-
-        0 2px 8px
-        rgba(0, 0, 0, 0.28),
-
-        0 0 10px
+        0 0 8px
         rgba(255, 255, 255, 0.25);
 
       transition:
@@ -559,29 +463,17 @@
     #time-row {
       display: flex;
 
-      justify-content:
-        space-between;
+      justify-content: space-between;
 
       margin-top: 8px;
 
       color:
-
-        rgba(
-          255,
-          255,
-          255,
-          0.62
-        );
+        rgba(255, 255, 255, 0.55);
 
       font-size: 12px;
 
       font-variant-numeric:
         tabular-nums;
-
-      text-shadow:
-
-        0 1px 6px
-        rgba(0, 0, 0, 0.20);
     }
 
 
@@ -593,10 +485,7 @@
 
       #artwork-panel,
       #info-panel {
-
-        width:
-          min(42vw, 310px);
-
+        width: min(42vw, 310px);
       }
 
     }
@@ -608,38 +497,27 @@
         gap: 14px;
       }
 
-
       #artwork-panel {
-
-        width:
-          min(70vw, 290px);
+        width: min(70vw, 290px);
 
         padding: 16px;
 
         border-radius: 26px;
       }
 
-
       #info-panel {
-
-        width:
-          min(70vw, 290px);
-
+        width: min(70vw, 290px);
       }
 
     }
 
   </style>
-
 </head>
 
 
 <body>
 
-
-  <!-- =========================
-       FOND FLOUTÉ
-  ========================= -->
+  <!-- FOND FLOUTÉ -->
 
   <div id="background"></div>
 
@@ -648,17 +526,12 @@
   <div id="vignette"></div>
 
 
-
-  <!-- =========================
-       PLAYER
-  ========================= -->
+  <!-- PLAYER -->
 
   <div id="player">
 
 
-    <!-- =========================
-         PANNEAU POCHETTE
-    ========================= -->
+    <!-- PANNEAU POCHETTE -->
 
     <div
       id="artwork-panel"
@@ -674,141 +547,87 @@
     </div>
 
 
-
-    <!-- =========================
-         PANNEAU INFORMATIONS
-    ========================= -->
+    <!-- PANNEAU INFORMATIONS -->
 
     <div
       id="info-panel"
       class="glass"
     >
 
-
-      <!-- TITRE -->
-
       <div id="title">
         En attente...
       </div>
 
 
-
-      <!-- ARTISTE -->
-
       <div id="artist"></div>
-
 
 
       <!-- PROGRESSION -->
 
       <div id="progress-container">
 
-
         <div id="progress-track">
 
+          <div id="progress-fill"></div>
 
-          <div
-            id="progress-fill"
-          ></div>
-
-
-          <div
-            id="progress-thumb"
-          ></div>
-
+          <div id="progress-thumb"></div>
 
         </div>
-
 
 
         <!-- TEMPS -->
 
         <div id="time-row">
 
-
           <span id="current-time">
             0:00
           </span>
-
 
           <span id="duration">
             0:00
           </span>
 
-
         </div>
-
 
       </div>
 
-
     </div>
-
 
   </div>
 
 
-
   <script>
-
 
     /* =========================
        ÉLÉMENTS
     ========================= */
 
     const player =
-      document.getElementById(
-        'player'
-      );
-
+      document.getElementById('player');
 
     const background =
-      document.getElementById(
-        'background'
-      );
-
+      document.getElementById('background');
 
     const artwork =
-      document.getElementById(
-        'artwork'
-      );
-
+      document.getElementById('artwork');
 
     const title =
-      document.getElementById(
-        'title'
-      );
-
+      document.getElementById('title');
 
     const artist =
-      document.getElementById(
-        'artist'
-      );
-
+      document.getElementById('artist');
 
     const progressFill =
-      document.getElementById(
-        'progress-fill'
-      );
-
+      document.getElementById('progress-fill');
 
     const progressThumb =
-      document.getElementById(
-        'progress-thumb'
-      );
-
+      document.getElementById('progress-thumb');
 
     const currentTimeElement =
-      document.getElementById(
-        'current-time'
-      );
-
+      document.getElementById('current-time');
 
     const durationElement =
-      document.getElementById(
-        'duration'
-      );
-
+      document.getElementById('duration');
 
 
     /* =========================
@@ -825,7 +644,6 @@
       Date.now();
 
 
-
     /* =========================
        FORMAT DU TEMPS
     ========================= */
@@ -835,48 +653,26 @@
       seconds =
         Math.max(
           0,
-          Math.floor(
-            Number(seconds) || 0
-          )
+          Math.floor(Number(seconds) || 0)
         );
-
 
       const minutes =
-        Math.floor(
-          seconds / 60
-        );
-
+        Math.floor(seconds / 60);
 
       const remainingSeconds =
         seconds % 60;
 
-
       return (
-
-        minutes
-
-        +
-
-        ':'
-
-        +
-
-        String(
-          remainingSeconds
-        ).padStart(
-          2,
-          '0'
-        )
-
+        minutes +
+        ':' +
+        String(remainingSeconds).padStart(2, '0')
       );
 
     }
 
 
-
     /* =========================
        NORMALISATION
-       SECONDES / MILLISECONDES
     ========================= */
 
     function normalizeTime(value) {
@@ -884,23 +680,17 @@
       const number =
         Number(value) || 0;
 
-
       if (number > 10000) {
-
         return number / 1000;
-
       }
-
 
       return number;
 
     }
 
 
-
     /* =========================
-       MISE À JOUR POCHETTE
-       + FOND FLOUTÉ
+       POCHETTE + FOND
     ========================= */
 
     function updateArtwork(url) {
@@ -909,18 +699,13 @@
         !url ||
         url === currentArtwork
       ) {
-
         return;
-
       }
 
 
       currentArtwork = url;
 
-
-      artwork.classList.remove(
-        'loaded'
-      );
+      artwork.classList.remove('loaded');
 
 
       const image =
@@ -929,34 +714,19 @@
 
       image.onload = () => {
 
-
-        /* Pochette principale */
-
-        artwork.src =
-          url;
-
-
-
-        /*
-          Même image utilisée
-          pour le fond.
-        */
+        artwork.src = url;
 
         background.style.backgroundImage =
-
           `url("${url}")`;
 
 
+        requestAnimationFrame(() => {
 
-        requestAnimationFrame(
-          () => {
+          artwork.classList.add(
+            'loaded'
+          );
 
-            artwork.classList.add(
-              'loaded'
-            );
-
-          }
-        );
+        });
 
       };
 
@@ -970,55 +740,37 @@
       };
 
 
-      image.src =
-        url;
+      image.src = url;
 
     }
 
 
-
     /* =========================
-       POSITION ACTUELLE
+       POSITION
     ========================= */
 
     function getCurrentPosition() {
 
-      if (
-        trackDuration <= 0
-      ) {
-
+      if (trackDuration <= 0) {
         return 0;
-
       }
 
 
       const elapsed =
-
-        (
-          Date.now()
-          -
-          positionUpdatedAt
-        )
-
+        (Date.now() - positionUpdatedAt)
         / 1000;
 
 
       return Math.min(
-
         trackDuration,
-
-        trackPosition
-        +
-        elapsed
-
+        trackPosition + elapsed
       );
 
     }
 
 
-
     /* =========================
-       AFFICHAGE PROGRESSION
+       PROGRESSION
     ========================= */
 
     function renderProgress() {
@@ -1026,65 +778,39 @@
       const position =
         getCurrentPosition();
 
-
       let percentage = 0;
 
 
-      if (
-        trackDuration > 0
-      ) {
+      if (trackDuration > 0) {
 
         percentage =
-
           Math.min(
-
             100,
-
             Math.max(
-
               0,
-
-              (
-                position
-                /
-                trackDuration
-              )
-
-              *
-              100
-
+              (position / trackDuration) * 100
             )
-
           );
 
       }
 
 
       progressFill.style.width =
-
         percentage + '%';
 
 
       progressThumb.style.left =
-
         percentage + '%';
 
 
       currentTimeElement.textContent =
-
-        formatTime(
-          position
-        );
+        formatTime(position);
 
 
       durationElement.textContent =
-
-        formatTime(
-          trackDuration
-        );
+        formatTime(trackDuration);
 
     }
-
 
 
     /* =========================
@@ -1093,134 +819,63 @@
 
     function updateTrack(data) {
 
-      if (!data) {
+      if (!data) return;
 
-        return;
-
-      }
-
-
-      /* TITRE */
 
       title.textContent =
-
-        data.title
-
-        ||
-
+        data.title ||
         'Titre inconnu';
 
 
-
-      /* ARTISTE */
-
       artist.textContent =
-
-        data.artist
-
-        ||
-
+        data.artist ||
         '';
 
 
-
-      /* POCHETTE */
-
       const cover =
-
-        data.coverUrl
-
-        ||
-
-        data.artwork
-
-        ||
-
+        data.coverUrl ||
+        data.artwork ||
         '';
 
 
       if (cover) {
-
-        updateArtwork(
-          cover
-        );
-
+        updateArtwork(cover);
       }
 
 
-
-      /* POSITION */
-
       const rawPosition =
-
-        data.position
-
-        ??
-
-        data.currentTime
-
-        ??
-
-        data.elapsed
-
-        ??
-
-        data.progress
-
-        ??
-
+        data.position ??
+        data.currentTime ??
+        data.elapsed ??
+        data.progress ??
         0;
 
 
-
-      /* DURÉE */
-
       const rawDuration =
-
-        data.duration
-
-        ??
-
-        data.totalDuration
-
-        ??
-
-        data.length
-
-        ??
-
+        data.duration ??
+        data.totalDuration ??
+        data.length ??
         0;
 
 
       const newDuration =
-
-        normalizeTime(
-          rawDuration
-        );
+        normalizeTime(rawDuration);
 
 
       const newPosition =
-
-        normalizeTime(
-          rawPosition
-        );
+        normalizeTime(rawPosition);
 
 
-      if (
-        newDuration > 0
-      ) {
+      if (newDuration > 0) {
 
         trackDuration =
           newDuration;
 
-
         trackPosition =
           newPosition;
 
-
         positionUpdatedAt =
           Date.now();
-
 
         renderProgress();
 
@@ -1234,44 +889,32 @@
     }
 
 
-
     /* =========================
        ANIMATION PROGRESSION
     ========================= */
 
     setInterval(
-
       renderProgress,
-
       500
-
     );
-
 
 
     /* =========================
        CHARGEMENT INITIAL
     ========================= */
 
-    fetch(
-      '/api/now-playing'
-    )
+    fetch('/api/now-playing')
 
       .then(
-
         response =>
           response.json()
-
       )
 
       .then(
-
         updateTrack
-
       )
 
       .catch(
-
         error => {
 
           console.error(
@@ -1280,9 +923,7 @@
           );
 
         }
-
       );
-
 
 
     /* =========================
@@ -1292,7 +933,6 @@
     function connectStream() {
 
       const eventSource =
-
         new EventSource(
           '/api/stream'
         );
@@ -1307,15 +947,9 @@
           try {
 
             const data =
+              JSON.parse(event.data);
 
-              JSON.parse(
-                event.data
-              );
-
-
-            updateTrack(
-              data
-            );
+            updateTrack(data);
 
           }
 
@@ -1337,13 +971,9 @@
 
         eventSource.close();
 
-
         setTimeout(
-
           connectStream,
-
           2000
-
         );
 
       };
@@ -1352,7 +982,6 @@
 
 
     connectStream();
-
 
   </script>
 
