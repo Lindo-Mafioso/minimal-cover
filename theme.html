@@ -5,16 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+
     * {
       box-sizing: border-box;
     }
+
+
+    /* =========================
+       PAGE
+    ========================= */
 
     html,
     body {
       width: 100%;
       height: 100%;
+
       margin: 0;
+      padding: 0;
+
       overflow: hidden;
+
       background: #111318;
 
       font-family:
@@ -25,18 +35,25 @@
         sans-serif;
     }
 
+
+    /* =========================
+       LECTEUR
+    ========================= */
+
     #player {
       width: 100%;
       height: 100%;
 
       display: flex;
       flex-direction: column;
+
       align-items: center;
       justify-content: center;
 
-      padding: 30px;
+      padding: 20px;
 
       opacity: 0;
+
       transform: translateY(8px);
 
       transition:
@@ -44,27 +61,47 @@
         transform 0.35s ease;
     }
 
+
     #player.visible {
       opacity: 1;
+
       transform: translateY(0);
     }
 
-    /* POCHETTE — PLUS PETITE */
+
+    /* =========================
+       POCHETTE
+    ========================= */
 
     #artwork-container {
-      width: min(38vw, 420px);
+
+      /*
+        Taille volontairement réduite.
+
+        Maximum :
+        300 pixels.
+
+        Une image source de faible résolution
+        paraîtra ainsi plus nette.
+      */
+
+      width: min(28vw, 300px);
+
       aspect-ratio: 1 / 1;
 
       overflow: hidden;
-      border-radius: 16px;
+
+      border-radius: 14px;
 
       background: #1a1d24;
 
       box-shadow:
-        0 18px 50px rgba(0, 0, 0, 0.5);
+        0 15px 45px rgba(0, 0, 0, 0.55);
     }
 
+
     #artwork {
+
       width: 100%;
       height: 100%;
 
@@ -72,208 +109,496 @@
 
       object-fit: cover;
 
+
+      /*
+        Petit ajustement visuel.
+
+        Attention :
+        cela n'augmente pas réellement
+        la résolution de l'image.
+      */
+
+      filter:
+        contrast(1.03)
+        saturate(1.03);
+
+
       opacity: 0;
-      transition: opacity 0.3s ease;
+
+
+      transition:
+        opacity 0.3s ease;
     }
+
 
     #artwork.loaded {
       opacity: 1;
     }
 
 
-    /* INFORMATIONS */
+    /* =========================
+       INFORMATIONS
+    ========================= */
 
     #info {
-      width: min(45vw, 500px);
 
-      margin-top: 18px;
+      width: min(34vw, 380px);
+
+      margin-top: 14px;
 
       text-align: center;
     }
 
+
+    /* =========================
+       TITRE
+    ========================= */
+
     #title {
+
       color: #ffffff;
 
-      font-size: clamp(20px, 2vw, 30px);
+      font-size:
+        clamp(
+          18px,
+          1.7vw,
+          26px
+        );
+
       font-weight: 700;
 
       line-height: 1.2;
 
+      letter-spacing: -0.01em;
+
+
       white-space: nowrap;
+
       overflow: hidden;
+
       text-overflow: ellipsis;
     }
 
+
+    /* =========================
+       ARTISTE
+    ========================= */
+
     #artist {
-      margin-top: 7px;
+
+      margin-top: 5px;
 
       color: #969ba5;
 
-      font-size: clamp(15px, 1.4vw, 21px);
+      font-size:
+        clamp(
+          14px,
+          1.2vw,
+          18px
+        );
+
       font-weight: 400;
 
+
       white-space: nowrap;
+
       overflow: hidden;
+
       text-overflow: ellipsis;
     }
 
 
+    /* =========================
+       PETITS ÉCRANS
+    ========================= */
+
     @media (max-width: 700px) {
 
-      #artwork-container {
-        width: min(65vw, 360px);
+      #player {
+        padding: 20px;
       }
 
+
+      #artwork-container {
+
+        width:
+          min(
+            60vw,
+            280px
+          );
+      }
+
+
       #info {
-        width: min(75vw, 400px);
+
+        width:
+          min(
+            70vw,
+            340px
+          );
       }
 
     }
+
   </style>
 </head>
 
 
 <body>
 
+
   <div id="player">
 
+
+    <!-- =====================
+         POCHETTE
+    ====================== -->
+
     <div id="artwork-container">
-      <img id="artwork" alt="Pochette de l'album">
+
+      <img
+        id="artwork"
+        src=""
+        alt="Pochette de l'album"
+      >
+
     </div>
 
+
+
+    <!-- =====================
+         INFORMATIONS
+    ====================== -->
+
     <div id="info">
-      <div id="title">En attente...</div>
+
+      <div id="title">
+
+        En attente...
+
+      </div>
+
+
       <div id="artist"></div>
+
     </div>
+
 
   </div>
 
 
+
   <script>
 
-    const player = document.getElementById('player');
-    const artwork = document.getElementById('artwork');
-    const title = document.getElementById('title');
-    const artist = document.getElementById('artist');
 
+    /* =========================
+       ÉLÉMENTS HTML
+    ========================= */
+
+    const player =
+      document.getElementById(
+        'player'
+      );
+
+
+    const artwork =
+      document.getElementById(
+        'artwork'
+      );
+
+
+    const title =
+      document.getElementById(
+        'title'
+      );
+
+
+    const artist =
+      document.getElementById(
+        'artist'
+      );
+
+
+
+    /* =========================
+       MÉMOIRE DE LA POCHETTE
+    ========================= */
 
     let currentArtwork = '';
 
 
+
+    /* =========================
+       MISE À JOUR POCHETTE
+    ========================= */
+
     function updateArtwork(url) {
 
-      if (!url || url === currentArtwork) {
+
+      /*
+        Pas d'image
+        ou même image :
+        on ne fait rien.
+      */
+
+      if (
+        !url ||
+        url === currentArtwork
+      ) {
+
         return;
+
       }
+
 
       currentArtwork = url;
 
-      artwork.classList.remove('loaded');
 
-      const image = new Image();
+      artwork.classList.remove(
+        'loaded'
+      );
+
+
+      /*
+        Préchargement
+        de la nouvelle image.
+      */
+
+      const image =
+        new Image();
+
 
       image.onload = () => {
 
+
         artwork.src = url;
 
-        requestAnimationFrame(() => {
-          artwork.classList.add('loaded');
-        });
+
+        requestAnimationFrame(
+          () => {
+
+            artwork.classList.add(
+              'loaded'
+            );
+
+          }
+        );
 
       };
+
 
       image.onerror = () => {
+
         console.error(
-          'Impossible de charger la pochette :',
-          url
+          'Impossible de charger la pochette.'
         );
+
       };
+
 
       image.src = url;
 
     }
 
 
+
+    /* =========================
+       MISE À JOUR DU MORCEAU
+    ========================= */
+
     function updateTrack(data) {
 
-      if (!data) return;
+
+      if (!data) {
+
+        return;
+
+      }
+
+
+
+      /* TITRE */
 
       title.textContent =
-        data.title || 'Titre inconnu';
+        data.title ||
+        'Titre inconnu';
+
+
+
+      /* ARTISTE */
 
       artist.textContent =
-        data.artist || '';
+        data.artist ||
+        '';
+
+
 
       /*
-        Compatibilité avec différentes
-        versions d'Orpheus.
+        Orpheus peut fournir
+        coverUrl ou artwork
+        selon la version.
       */
 
       const cover =
+
         data.coverUrl ||
+
         data.artwork ||
+
         '';
 
+
+
+      /* POCHETTE */
+
       if (cover) {
-        console.log(
-          'URL de la pochette :',
+
+        updateArtwork(
           cover
         );
 
-        updateArtwork(cover);
       }
 
-      player.classList.add('visible');
+
+
+      /* AFFICHAGE */
+
+      player.classList.add(
+        'visible'
+      );
 
     }
 
 
-    /*
-      Morceau actuel
-    */
 
-    fetch('/api/now-playing')
-      .then(response => response.json())
-      .then(updateTrack)
-      .catch(error => {
-        console.error(
-          'Erreur :',
-          error
-        );
-      });
+    /* =========================
+       CHARGEMENT INITIAL
+    ========================= */
 
+    fetch(
+      '/api/now-playing'
+    )
 
-    /*
-      Changements en temps réel
-    */
+      .then(
+        response =>
+          response.json()
+      )
 
-    const eventSource =
-      new EventSource('/api/stream');
-
-
-    eventSource.addEventListener(
-      'track',
-      event => {
-
-        try {
+      .then(
+        data => {
 
           updateTrack(
-            JSON.parse(event.data)
+            data
           );
 
-        } catch (error) {
+        }
+      )
+
+      .catch(
+        error => {
 
           console.error(
-            'Erreur SSE :',
+            'Erreur lors du chargement :',
             error
           );
 
         }
+      );
 
-      }
-    );
+
+
+    /* =========================
+       MISES À JOUR EN DIRECT
+    ========================= */
+
+    function connectStream() {
+
+
+      const eventSource =
+
+        new EventSource(
+          '/api/stream'
+        );
+
+
+
+      eventSource.addEventListener(
+
+        'track',
+
+        event => {
+
+
+          try {
+
+
+            const data =
+
+              JSON.parse(
+                event.data
+              );
+
+
+
+            updateTrack(
+              data
+            );
+
+
+          }
+
+
+          catch (error) {
+
+
+            console.error(
+              'Erreur SSE :',
+              error
+            );
+
+
+          }
+
+        }
+
+      );
+
+
+
+      /*
+
+        Reconnexion automatique
+        si le flux se coupe.
+
+      */
+
+      eventSource.onerror = () => {
+
+
+        eventSource.close();
+
+
+        setTimeout(
+
+          connectStream,
+
+          2000
+
+        );
+
+      };
+
+    }
+
+
+
+    /* DÉMARRAGE */
+
+    connectStream();
+
 
   </script>
+
 
 </body>
 </html>
