@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #player {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #artwork {
+      width: 80%;
+      max-width: 600px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 18px;
+    }
+
+    #title {
+      margin-top: 22px;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #artist {
+      margin-top: 8px;
+      color: rgba(255,255,255,0.7);
+      font-size: 22px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="player">
+    <img id="artwork" src="" alt="Pochette">
+
+    <div id="title">En attente...</div>
+    <div id="artist"></div>
+  </div>
+
+  <script>
+    const es = new EventSource('/api/stream');
+
+    es.addEventListener('track', (e) => {
+      const { title, artist, artwork } = JSON.parse(e.data);
+
+      document.getElementById('title').textContent = title || '';
+      document.getElementById('artist').textContent = artist || '';
+
+      if (artwork) {
+        document.getElementById('artwork').src = artwork;
+      }
+    });
+  </script>
+
+</body>
+</html>
