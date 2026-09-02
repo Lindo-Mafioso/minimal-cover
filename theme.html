@@ -6,10 +6,6 @@
 
   <style>
 
-    /* =========================
-       BASE
-    ========================= */
-
     * {
       box-sizing: border-box;
     }
@@ -18,21 +14,16 @@
     body {
       width: 100%;
       height: 100%;
-
       margin: 0;
-      padding: 0;
-
       overflow: hidden;
 
-      background: #000000;
+      background: #000;
 
       font-family:
         -apple-system,
         BlinkMacSystemFont,
         "SF Pro Display",
-        "SF Pro Text",
         "Segoe UI",
-        Arial,
         sans-serif;
     }
 
@@ -51,17 +42,15 @@
       align-items: center;
       justify-content: center;
 
-      gap: 18px;
-
+      gap: 16px;
       padding: 24px;
 
       opacity: 0;
-
-      transform: translateY(10px);
+      transform: translateY(8px);
 
       transition:
-        opacity 0.45s ease,
-        transform 0.45s ease;
+        opacity 0.4s ease,
+        transform 0.4s ease;
     }
 
     #player.visible {
@@ -71,63 +60,67 @@
 
 
     /* =========================
-       EFFET VERRE
+       LIQUID GLASS SOMBRE
     ========================= */
 
     .glass {
       position: relative;
 
+      /*
+        Verre sombre :
+        beaucoup moins clair
+        que la version précédente.
+      */
+
       background:
         linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.10),
-          rgba(255, 255, 255, 0.035)
+          145deg,
+          rgba(255, 255, 255, 0.075),
+          rgba(255, 255, 255, 0.025)
         );
 
       backdrop-filter:
-        blur(24px)
-        saturate(130%);
+        blur(28px)
+        saturate(120%);
 
       -webkit-backdrop-filter:
-        blur(24px)
-        saturate(130%);
+        blur(28px)
+        saturate(120%);
 
       border:
         1px solid
-        rgba(255, 255, 255, 0.22);
+        rgba(255, 255, 255, 0.16);
 
       box-shadow:
-        0 20px 50px
-        rgba(0, 0, 0, 0.55),
+        0 18px 45px
+        rgba(0, 0, 0, 0.75),
 
         inset
         0 1px 0
-        rgba(255, 255, 255, 0.08);
+        rgba(255, 255, 255, 0.06);
     }
 
 
     /*
-      Reflet très discret.
+      Reflet extrêmement discret.
     */
 
     .glass::before {
       content: "";
 
       position: absolute;
-
       inset: 0;
-
-      pointer-events: none;
 
       border-radius: inherit;
 
+      pointer-events: none;
+
       background:
         linear-gradient(
-          125deg,
-          rgba(255, 255, 255, 0.06),
-          transparent 32%,
-          transparent 70%,
-          rgba(255, 255, 255, 0.015)
+          135deg,
+          rgba(255, 255, 255, 0.035),
+          transparent 30%,
+          transparent 75%
         );
     }
 
@@ -138,15 +131,13 @@
 
     #artwork-panel {
       width: min(27vw, 310px);
-
       aspect-ratio: 1 / 1;
 
-      padding: 20px;
+      padding: 18px;
 
       border-radius: 30px;
 
       display: flex;
-
       align-items: center;
       justify-content: center;
     }
@@ -171,18 +162,16 @@
       transform: scale(0.98);
 
       transition:
-        opacity 0.45s ease,
-        transform 0.45s ease;
+        opacity 0.4s ease,
+        transform 0.4s ease;
 
       box-shadow:
-        0 10px 30px
-        rgba(0, 0, 0, 0.45);
+        0 10px 25px
+        rgba(0, 0, 0, 0.55);
     }
-
 
     #artwork.loaded {
       opacity: 1;
-
       transform: scale(1);
     }
 
@@ -194,19 +183,12 @@
     #info-panel {
       width: min(27vw, 310px);
 
-      min-height: 120px;
-
-      border-radius: 28px;
+      border-radius: 26px;
 
       padding:
+        20px
         22px
-        24px;
-
-      display: flex;
-
-      flex-direction: column;
-
-      justify-content: center;
+        18px;
 
       text-align: center;
     }
@@ -217,30 +199,18 @@
     ========================= */
 
     #title {
-      color: #ffffff;
+      color: #fff;
 
       font-size:
-        clamp(
-          19px,
-          1.65vw,
-          26px
-        );
+        clamp(18px, 1.6vw, 25px);
 
       font-weight: 700;
 
       letter-spacing: -0.02em;
 
-      line-height: 1.2;
-
       white-space: nowrap;
-
       overflow: hidden;
-
       text-overflow: ellipsis;
-
-      text-shadow:
-        0 1px 10px
-        rgba(255, 255, 255, 0.08);
     }
 
 
@@ -249,32 +219,109 @@
     ========================= */
 
     #artist {
-      margin-top: 7px;
+      margin-top: 6px;
 
       color:
-        rgba(
-          255,
-          255,
-          255,
-          0.58
-        );
+        rgba(255, 255, 255, 0.55);
 
       font-size:
-        clamp(
-          14px,
-          1.15vw,
-          18px
-        );
-
-      font-weight: 400;
-
-      letter-spacing: -0.01em;
+        clamp(14px, 1.1vw, 17px);
 
       white-space: nowrap;
-
       overflow: hidden;
-
       text-overflow: ellipsis;
+    }
+
+
+    /* =========================
+       PROGRESSION
+    ========================= */
+
+    #progress-container {
+      margin-top: 18px;
+
+      width: 100%;
+    }
+
+
+    /* BARRE DE FOND */
+
+    #progress-track {
+      position: relative;
+
+      width: 100%;
+      height: 4px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(255, 255, 255, 0.16);
+
+      overflow: visible;
+    }
+
+
+    /* PARTIE ÉCOULÉE */
+
+    #progress-fill {
+      width: 0%;
+      height: 100%;
+
+      border-radius: inherit;
+
+      background:
+        rgba(255, 255, 255, 0.88);
+
+      transition:
+        width 0.5s linear;
+    }
+
+
+    /* CURSEUR */
+
+    #progress-thumb {
+      position: absolute;
+
+      top: 50%;
+      left: 0%;
+
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+
+      background: #fff;
+
+      transform:
+        translate(-50%, -50%);
+
+      box-shadow:
+        0 0 8px
+        rgba(255, 255, 255, 0.35);
+
+      transition:
+        left 0.5s linear;
+    }
+
+
+    /* =========================
+       TEMPS
+    ========================= */
+
+    #time-row {
+      display: flex;
+
+      justify-content: space-between;
+
+      margin-top: 8px;
+
+      color:
+        rgba(255, 255, 255, 0.48);
+
+      font-size: 12px;
+
+      font-variant-numeric:
+        tabular-nums;
     }
 
 
@@ -286,11 +333,7 @@
 
       #artwork-panel,
       #info-panel {
-        width:
-          min(
-            42vw,
-            310px
-          );
+        width: min(42vw, 310px);
       }
 
     }
@@ -302,39 +345,16 @@
         gap: 14px;
       }
 
-
       #artwork-panel {
-        width:
-          min(
-            70vw,
-            300px
-          );
+        width: min(70vw, 290px);
 
         padding: 16px;
 
         border-radius: 26px;
       }
 
-
       #info-panel {
-        width:
-          min(
-            70vw,
-            300px
-          );
-
-        min-height: 105px;
-
-        padding:
-          18px
-          20px;
-
-        border-radius: 24px;
-      }
-
-
-      #artwork {
-        border-radius: 15px;
+        width: min(70vw, 290px);
       }
 
     }
@@ -345,17 +365,10 @@
 
 <body>
 
-
-  <!-- =========================
-       LECTEUR
-  ========================== -->
-
   <div id="player">
 
 
-    <!-- =====================
-         PANNEAU POCHETTE
-    ====================== -->
+    <!-- PANNEAU POCHETTE -->
 
     <div
       id="artwork-panel"
@@ -365,30 +378,65 @@
       <img
         id="artwork"
         src=""
-        alt="Pochette de l'album"
+        alt="Pochette"
       >
 
     </div>
 
 
 
-    <!-- =====================
-         PANNEAU INFORMATIONS
-    ====================== -->
+    <!-- PANNEAU INFORMATIONS -->
 
     <div
       id="info-panel"
       class="glass"
     >
 
+
+      <!-- TITRE -->
+
       <div id="title">
         En attente...
       </div>
 
+
+      <!-- ARTISTE -->
+
       <div id="artist"></div>
 
-    </div>
 
+
+      <!-- PROGRESSION -->
+
+      <div id="progress-container">
+
+        <div id="progress-track">
+
+          <div id="progress-fill"></div>
+
+          <div id="progress-thumb"></div>
+
+        </div>
+
+
+        <!-- TEMPS -->
+
+        <div id="time-row">
+
+          <span id="current-time">
+            0:00
+          </span>
+
+          <span id="duration">
+            0:00
+          </span>
+
+        </div>
+
+      </div>
+
+
+    </div>
 
   </div>
 
@@ -401,40 +449,75 @@
     ========================= */
 
     const player =
-      document.getElementById(
-        'player'
-      );
-
+      document.getElementById('player');
 
     const artwork =
-      document.getElementById(
-        'artwork'
-      );
-
+      document.getElementById('artwork');
 
     const title =
-      document.getElementById(
-        'title'
-      );
-
+      document.getElementById('title');
 
     const artist =
-      document.getElementById(
-        'artist'
-      );
+      document.getElementById('artist');
 
+    const progressFill =
+      document.getElementById('progress-fill');
+
+    const progressThumb =
+      document.getElementById('progress-thumb');
+
+    const currentTimeElement =
+      document.getElementById('current-time');
+
+    const durationElement =
+      document.getElementById('duration');
 
 
     /* =========================
-       MÉMOIRE POCHETTE
+       DONNÉES ACTUELLES
     ========================= */
 
     let currentArtwork = '';
 
+    let currentPosition = 0;
+
+    let currentDuration = 0;
+
+    let lastUpdate = Date.now();
 
 
     /* =========================
-       MISE À JOUR POCHETTE
+       FORMAT TEMPS
+    ========================= */
+
+    function formatTime(seconds) {
+
+      seconds =
+        Math.max(
+          0,
+          Math.floor(seconds || 0)
+        );
+
+      const minutes =
+        Math.floor(seconds / 60);
+
+      const remainingSeconds =
+        seconds % 60;
+
+      return (
+        minutes +
+        ':' +
+        String(remainingSeconds).padStart(
+          2,
+          '0'
+        )
+      );
+
+    }
+
+
+    /* =========================
+       POCHETTE
     ========================= */
 
     function updateArtwork(url) {
@@ -449,10 +532,7 @@
 
       currentArtwork = url;
 
-
-      artwork.classList.remove(
-        'loaded'
-      );
+      artwork.classList.remove('loaded');
 
 
       const image =
@@ -464,24 +544,13 @@
         artwork.src = url;
 
 
-        requestAnimationFrame(
-          () => {
+        requestAnimationFrame(() => {
 
-            artwork.classList.add(
-              'loaded'
-            );
+          artwork.classList.add(
+            'loaded'
+          );
 
-          }
-        );
-
-      };
-
-
-      image.onerror = () => {
-
-        console.error(
-          'Impossible de charger la pochette.'
-        );
+        });
 
       };
 
@@ -491,6 +560,53 @@
     }
 
 
+    /* =========================
+       PROGRESSION
+    ========================= */
+
+    function updateProgress() {
+
+      let percentage = 0;
+
+
+      if (currentDuration > 0) {
+
+        percentage =
+          Math.min(
+            100,
+            Math.max(
+              0,
+              (
+                currentPosition /
+                currentDuration
+              ) * 100
+            )
+          );
+
+      }
+
+
+      progressFill.style.width =
+        percentage + '%';
+
+
+      progressThumb.style.left =
+        percentage + '%';
+
+
+      currentTimeElement.textContent =
+        formatTime(
+          currentPosition
+        );
+
+
+      durationElement.textContent =
+        formatTime(
+          currentDuration
+        );
+
+    }
+
 
     /* =========================
        MISE À JOUR MORCEAU
@@ -498,9 +614,7 @@
 
     function updateTrack(data) {
 
-      if (!data) {
-        return;
-      }
+      if (!data) return;
 
 
       title.textContent =
@@ -512,11 +626,6 @@
         data.artist ||
         '';
 
-
-      /*
-        Compatibilité
-        coverUrl / artwork
-      */
 
       const cover =
 
@@ -536,6 +645,67 @@
       }
 
 
+      /*
+        Position actuelle.
+
+        Plusieurs noms possibles
+        sont testés.
+      */
+
+      const position =
+
+        data.position ??
+
+        data.currentTime ??
+
+        data.elapsed ??
+
+        data.progress ??
+
+        0;
+
+
+      /*
+        Durée totale.
+
+        Plusieurs noms possibles
+        sont testés.
+      */
+
+      const duration =
+
+        data.duration ??
+
+        data.totalDuration ??
+
+        data.length ??
+
+        0;
+
+
+      /*
+        Mise à jour uniquement
+        si les données existent.
+      */
+
+      if (
+        duration > 0
+      ) {
+
+        currentPosition =
+          Number(position) || 0;
+
+        currentDuration =
+          Number(duration) || 0;
+
+        lastUpdate =
+          Date.now();
+
+        updateProgress();
+
+      }
+
+
       player.classList.add(
         'visible'
       );
@@ -543,14 +713,57 @@
     }
 
 
+    /* =========================
+       ANIMATION DE LA BARRE
+    ========================= */
+
+    setInterval(() => {
+
+      if (
+        currentDuration > 0
+      ) {
+
+        const now =
+          Date.now();
+
+
+        const elapsedSeconds =
+
+          (now - lastUpdate)
+          / 1000;
+
+
+        const estimatedPosition =
+
+          currentPosition +
+          elapsedSeconds;
+
+
+        if (
+          estimatedPosition <=
+          currentDuration
+        ) {
+
+          currentPosition =
+            estimatedPosition;
+
+          lastUpdate =
+            now;
+
+          updateProgress();
+
+        }
+
+      }
+
+    }, 1000);
+
 
     /* =========================
        CHARGEMENT INITIAL
     ========================= */
 
-    fetch(
-      '/api/now-playing'
-    )
+    fetch('/api/now-playing')
 
       .then(
         response =>
@@ -558,11 +771,7 @@
       )
 
       .then(
-        data => {
-
-          updateTrack(data);
-
-        }
+        updateTrack
       )
 
       .catch(
@@ -577,15 +786,13 @@
       );
 
 
-
     /* =========================
-       FLUX EN DIRECT
+       STREAM EN DIRECT
     ========================= */
 
     function connectStream() {
 
       const eventSource =
-
         new EventSource(
           '/api/stream'
         );
@@ -600,7 +807,6 @@
           try {
 
             const data =
-
               JSON.parse(
                 event.data
               );
@@ -626,21 +832,14 @@
       );
 
 
-      /*
-        Reconnexion automatique
-      */
-
       eventSource.onerror = () => {
 
         eventSource.close();
 
 
         setTimeout(
-
           connectStream,
-
           2000
-
         );
 
       };
