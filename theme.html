@@ -6,14 +6,13 @@
 
   <style>
 
+    /* =========================
+       BASE
+    ========================= */
+
     * {
       box-sizing: border-box;
     }
-
-
-    /* =========================
-       PAGE
-    ========================= */
 
     html,
     body {
@@ -25,11 +24,13 @@
 
       overflow: hidden;
 
-      background: #111318;
+      background: #000000;
 
       font-family:
         -apple-system,
         BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
         "Segoe UI",
         Arial,
         sans-serif;
@@ -50,22 +51,104 @@
       align-items: center;
       justify-content: center;
 
-      padding: 20px;
+      gap: 18px;
+
+      padding: 24px;
 
       opacity: 0;
 
-      transform: translateY(8px);
+      transform: translateY(10px);
 
       transition:
-        opacity 0.35s ease,
-        transform 0.35s ease;
+        opacity 0.45s ease,
+        transform 0.45s ease;
     }
-
 
     #player.visible {
       opacity: 1;
-
       transform: translateY(0);
+    }
+
+
+    /* =========================
+       EFFET VERRE
+    ========================= */
+
+    .glass {
+      position: relative;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.10),
+          rgba(255, 255, 255, 0.035)
+        );
+
+      backdrop-filter:
+        blur(24px)
+        saturate(130%);
+
+      -webkit-backdrop-filter:
+        blur(24px)
+        saturate(130%);
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.22);
+
+      box-shadow:
+        0 20px 50px
+        rgba(0, 0, 0, 0.55),
+
+        inset
+        0 1px 0
+        rgba(255, 255, 255, 0.08);
+    }
+
+
+    /*
+      Reflet très discret.
+    */
+
+    .glass::before {
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      pointer-events: none;
+
+      border-radius: inherit;
+
+      background:
+        linear-gradient(
+          125deg,
+          rgba(255, 255, 255, 0.06),
+          transparent 32%,
+          transparent 70%,
+          rgba(255, 255, 255, 0.015)
+        );
+    }
+
+
+    /* =========================
+       PANNEAU POCHETTE
+    ========================= */
+
+    #artwork-panel {
+      width: min(27vw, 310px);
+
+      aspect-ratio: 1 / 1;
+
+      padding: 20px;
+
+      border-radius: 30px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
     }
 
 
@@ -73,35 +156,7 @@
        POCHETTE
     ========================= */
 
-    #artwork-container {
-
-      /*
-        Taille volontairement réduite.
-
-        Maximum :
-        300 pixels.
-
-        Une image source de faible résolution
-        paraîtra ainsi plus nette.
-      */
-
-      width: min(28vw, 300px);
-
-      aspect-ratio: 1 / 1;
-
-      overflow: hidden;
-
-      border-radius: 14px;
-
-      background: #1a1d24;
-
-      box-shadow:
-        0 15px 45px rgba(0, 0, 0, 0.55);
-    }
-
-
     #artwork {
-
       width: 100%;
       height: 100%;
 
@@ -109,42 +164,49 @@
 
       object-fit: cover;
 
-
-      /*
-        Petit ajustement visuel.
-
-        Attention :
-        cela n'augmente pas réellement
-        la résolution de l'image.
-      */
-
-      filter:
-        contrast(1.03)
-        saturate(1.03);
-
+      border-radius: 18px;
 
       opacity: 0;
 
+      transform: scale(0.98);
 
       transition:
-        opacity 0.3s ease;
+        opacity 0.45s ease,
+        transform 0.45s ease;
+
+      box-shadow:
+        0 10px 30px
+        rgba(0, 0, 0, 0.45);
     }
 
 
     #artwork.loaded {
       opacity: 1;
+
+      transform: scale(1);
     }
 
 
     /* =========================
-       INFORMATIONS
+       PANNEAU INFORMATIONS
     ========================= */
 
-    #info {
+    #info-panel {
+      width: min(27vw, 310px);
 
-      width: min(34vw, 380px);
+      min-height: 120px;
 
-      margin-top: 14px;
+      border-radius: 28px;
+
+      padding:
+        22px
+        24px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
 
       text-align: center;
     }
@@ -155,28 +217,30 @@
     ========================= */
 
     #title {
-
       color: #ffffff;
 
       font-size:
         clamp(
-          18px,
-          1.7vw,
+          19px,
+          1.65vw,
           26px
         );
 
       font-weight: 700;
 
+      letter-spacing: -0.02em;
+
       line-height: 1.2;
-
-      letter-spacing: -0.01em;
-
 
       white-space: nowrap;
 
       overflow: hidden;
 
       text-overflow: ellipsis;
+
+      text-shadow:
+        0 1px 10px
+        rgba(255, 255, 255, 0.08);
     }
 
 
@@ -185,20 +249,26 @@
     ========================= */
 
     #artist {
+      margin-top: 7px;
 
-      margin-top: 5px;
-
-      color: #969ba5;
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.58
+        );
 
       font-size:
         clamp(
           14px,
-          1.2vw,
+          1.15vw,
           18px
         );
 
       font-weight: 400;
 
+      letter-spacing: -0.01em;
 
       white-space: nowrap;
 
@@ -209,33 +279,62 @@
 
 
     /* =========================
-       PETITS ÉCRANS
+       RESPONSIVE
     ========================= */
 
-    @media (max-width: 700px) {
+    @media (max-width: 900px) {
 
-      #player {
-        padding: 20px;
-      }
-
-
-      #artwork-container {
-
+      #artwork-panel,
+      #info-panel {
         width:
           min(
-            60vw,
-            280px
+            42vw,
+            310px
           );
       }
 
+    }
 
-      #info {
 
+    @media (max-width: 600px) {
+
+      #player {
+        gap: 14px;
+      }
+
+
+      #artwork-panel {
         width:
           min(
             70vw,
-            340px
+            300px
           );
+
+        padding: 16px;
+
+        border-radius: 26px;
+      }
+
+
+      #info-panel {
+        width:
+          min(
+            70vw,
+            300px
+          );
+
+        min-height: 105px;
+
+        padding:
+          18px
+          20px;
+
+        border-radius: 24px;
+      }
+
+
+      #artwork {
+        border-radius: 15px;
       }
 
     }
@@ -247,14 +346,21 @@
 <body>
 
 
+  <!-- =========================
+       LECTEUR
+  ========================== -->
+
   <div id="player">
 
 
     <!-- =====================
-         POCHETTE
+         PANNEAU POCHETTE
     ====================== -->
 
-    <div id="artwork-container">
+    <div
+      id="artwork-panel"
+      class="glass"
+    >
 
       <img
         id="artwork"
@@ -267,17 +373,17 @@
 
 
     <!-- =====================
-         INFORMATIONS
+         PANNEAU INFORMATIONS
     ====================== -->
 
-    <div id="info">
+    <div
+      id="info-panel"
+      class="glass"
+    >
 
       <div id="title">
-
         En attente...
-
       </div>
-
 
       <div id="artist"></div>
 
@@ -290,9 +396,8 @@
 
   <script>
 
-
     /* =========================
-       ÉLÉMENTS HTML
+       ÉLÉMENTS
     ========================= */
 
     const player =
@@ -321,7 +426,7 @@
 
 
     /* =========================
-       MÉMOIRE DE LA POCHETTE
+       MÉMOIRE POCHETTE
     ========================= */
 
     let currentArtwork = '';
@@ -334,20 +439,11 @@
 
     function updateArtwork(url) {
 
-
-      /*
-        Pas d'image
-        ou même image :
-        on ne fait rien.
-      */
-
       if (
         !url ||
         url === currentArtwork
       ) {
-
         return;
-
       }
 
 
@@ -359,17 +455,11 @@
       );
 
 
-      /*
-        Préchargement
-        de la nouvelle image.
-      */
-
       const image =
         new Image();
 
 
       image.onload = () => {
-
 
         artwork.src = url;
 
@@ -403,40 +493,29 @@
 
 
     /* =========================
-       MISE À JOUR DU MORCEAU
+       MISE À JOUR MORCEAU
     ========================= */
 
     function updateTrack(data) {
 
-
       if (!data) {
-
         return;
-
       }
 
-
-
-      /* TITRE */
 
       title.textContent =
         data.title ||
         'Titre inconnu';
 
 
-
-      /* ARTISTE */
-
       artist.textContent =
         data.artist ||
         '';
 
 
-
       /*
-        Orpheus peut fournir
-        coverUrl ou artwork
-        selon la version.
+        Compatibilité
+        coverUrl / artwork
       */
 
       const cover =
@@ -448,9 +527,6 @@
         '';
 
 
-
-      /* POCHETTE */
-
       if (cover) {
 
         updateArtwork(
@@ -459,9 +535,6 @@
 
       }
 
-
-
-      /* AFFICHAGE */
 
       player.classList.add(
         'visible'
@@ -487,9 +560,7 @@
       .then(
         data => {
 
-          updateTrack(
-            data
-          );
+          updateTrack(data);
 
         }
       )
@@ -498,7 +569,7 @@
         error => {
 
           console.error(
-            'Erreur lors du chargement :',
+            'Erreur now-playing :',
             error
           );
 
@@ -508,11 +579,10 @@
 
 
     /* =========================
-       MISES À JOUR EN DIRECT
+       FLUX EN DIRECT
     ========================= */
 
     function connectStream() {
-
 
       const eventSource =
 
@@ -521,16 +591,13 @@
         );
 
 
-
       eventSource.addEventListener(
 
         'track',
 
         event => {
 
-
           try {
-
 
             const data =
 
@@ -539,23 +606,18 @@
               );
 
 
-
             updateTrack(
               data
             );
 
-
           }
 
-
           catch (error) {
-
 
             console.error(
               'Erreur SSE :',
               error
             );
-
 
           }
 
@@ -564,16 +626,11 @@
       );
 
 
-
       /*
-
         Reconnexion automatique
-        si le flux se coupe.
-
       */
 
       eventSource.onerror = () => {
-
 
         eventSource.close();
 
@@ -591,14 +648,9 @@
     }
 
 
-
-    /* DÉMARRAGE */
-
     connectStream();
 
-
   </script>
-
 
 </body>
 </html>
