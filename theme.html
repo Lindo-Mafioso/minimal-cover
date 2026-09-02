@@ -15,7 +15,6 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-
       background: #111318;
 
       font-family:
@@ -26,30 +25,23 @@
         sans-serif;
     }
 
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     #player {
       width: 100%;
       height: 100%;
 
       display: flex;
       flex-direction: column;
-
       align-items: center;
       justify-content: center;
 
-      padding: 60px;
+      padding: 30px;
 
       opacity: 0;
-      transform: translateY(15px);
+      transform: translateY(8px);
 
       transition:
-        opacity 0.45s ease,
-        transform 0.45s ease;
+        opacity 0.35s ease,
+        transform 0.35s ease;
     }
 
     #player.visible {
@@ -57,23 +49,19 @@
       transform: translateY(0);
     }
 
-
-    /* =========================
-       POCHETTE
-    ========================= */
+    /* POCHETTE — PLUS PETITE */
 
     #artwork-container {
-      width: min(62vw, 700px);
+      width: min(38vw, 420px);
       aspect-ratio: 1 / 1;
 
       overflow: hidden;
-
-      border-radius: 22px;
+      border-radius: 16px;
 
       background: #1a1d24;
 
       box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.55);
+        0 18px 50px rgba(0, 0, 0, 0.5);
     }
 
     #artwork {
@@ -84,31 +72,21 @@
 
       object-fit: cover;
 
-      image-rendering: auto;
-
       opacity: 0;
-
-      transform: scale(1.03);
-
-      transition:
-        opacity 0.45s ease,
-        transform 0.7s ease;
+      transition: opacity 0.3s ease;
     }
 
     #artwork.loaded {
       opacity: 1;
-      transform: scale(1);
     }
 
 
-    /* =========================
-       INFORMATIONS
-    ========================= */
+    /* INFORMATIONS */
 
     #info {
-      width: min(62vw, 700px);
+      width: min(45vw, 500px);
 
-      margin-top: 32px;
+      margin-top: 18px;
 
       text-align: center;
     }
@@ -116,13 +94,10 @@
     #title {
       color: #ffffff;
 
-      font-size: clamp(28px, 3vw, 48px);
+      font-size: clamp(20px, 2vw, 30px);
+      font-weight: 700;
 
-      font-weight: 750;
-
-      line-height: 1.15;
-
-      letter-spacing: -0.02em;
+      line-height: 1.2;
 
       white-space: nowrap;
       overflow: hidden;
@@ -130,12 +105,11 @@
     }
 
     #artist {
-      margin-top: 12px;
+      margin-top: 7px;
 
-      color: #a8adb8;
+      color: #969ba5;
 
-      font-size: clamp(19px, 2vw, 30px);
-
+      font-size: clamp(15px, 1.4vw, 21px);
       font-weight: 400;
 
       white-space: nowrap;
@@ -144,23 +118,17 @@
     }
 
 
-    /* =========================
-       RESPONSIVE PETITS ÉCRANS
-    ========================= */
-
     @media (max-width: 700px) {
 
-      #player {
-        padding: 30px;
+      #artwork-container {
+        width: min(65vw, 360px);
       }
 
-      #artwork-container,
       #info {
-        width: min(88vw, 600px);
+        width: min(75vw, 400px);
       }
 
     }
-
   </style>
 </head>
 
@@ -170,24 +138,12 @@
   <div id="player">
 
     <div id="artwork-container">
-
-      <img
-        id="artwork"
-        src=""
-        alt="Pochette de l'album"
-      >
-
+      <img id="artwork" alt="Pochette de l'album">
     </div>
 
-
     <div id="info">
-
-      <div id="title">
-        En attente...
-      </div>
-
+      <div id="title">En attente...</div>
       <div id="artist"></div>
-
     </div>
 
   </div>
@@ -201,77 +157,22 @@
     const artist = document.getElementById('artist');
 
 
-    /*
-      Améliore la résolution des URLs Deezer
-      lorsque l'URL contient déjà une taille.
-    */
-
-    function getHighResolutionArtwork(url) {
-
-      if (!url) return '';
-
-      /*
-        Exemple Deezer :
-
-        .../250x250-000000-80-0-0.jpg
-
-        devient :
-
-        .../1200x1200-000000-80-0-0.jpg
-      */
-
-      if (
-        url.includes('dzcdn.net') ||
-        url.includes('deezer')
-      ) {
-
-        return url.replace(
-          /\/\d+x\d+([-.])/,
-          '/1200x1200$1'
-        );
-
-      }
-
-      return url;
-
-    }
+    let currentArtwork = '';
 
 
     function updateArtwork(url) {
 
-      if (!url) return;
+      if (!url || url === currentArtwork) {
+        return;
+      }
+
+      currentArtwork = url;
 
       artwork.classList.remove('loaded');
-
-      const highResUrl =
-        getHighResolutionArtwork(url);
-
-
-      /*
-        Précharge l'image avant de l'afficher
-        pour éviter un changement brutal.
-      */
 
       const image = new Image();
 
       image.onload = () => {
-
-        artwork.src = highResUrl;
-
-        requestAnimationFrame(() => {
-          artwork.classList.add('loaded');
-        });
-
-      };
-
-
-      /*
-        Si la version haute résolution
-        ne fonctionne pas, on utilise
-        l'URL originale.
-      */
-
-      image.onerror = () => {
 
         artwork.src = url;
 
@@ -281,8 +182,14 @@
 
       };
 
+      image.onerror = () => {
+        console.error(
+          'Impossible de charger la pochette :',
+          url
+        );
+      };
 
-      image.src = highResUrl;
+      image.src = url;
 
     }
 
@@ -291,18 +198,15 @@
 
       if (!data) return;
 
-
       title.textContent =
         data.title || 'Titre inconnu';
-
 
       artist.textContent =
         data.artist || '';
 
-
       /*
-        Compatible avec les différentes
-        versions possibles d'Orpheus.
+        Compatibilité avec différentes
+        versions d'Orpheus.
       */
 
       const cover =
@@ -310,11 +214,14 @@
         data.artwork ||
         '';
 
-
       if (cover) {
+        console.log(
+          'URL de la pochette :',
+          cover
+        );
+
         updateArtwork(cover);
       }
-
 
       player.classList.add('visible');
 
@@ -322,77 +229,49 @@
 
 
     /*
-      Chargement immédiat
-      du morceau actuellement joué.
+      Morceau actuel
     */
 
     fetch('/api/now-playing')
-
       .then(response => response.json())
-
-      .then(data => {
-        updateTrack(data);
-      })
-
+      .then(updateTrack)
       .catch(error => {
         console.error(
-          'Erreur now-playing :',
+          'Erreur :',
           error
         );
       });
 
 
     /*
-      Mises à jour en temps réel.
+      Changements en temps réel
     */
 
-    function connectStream() {
-
-      const eventSource =
-        new EventSource('/api/stream');
+    const eventSource =
+      new EventSource('/api/stream');
 
 
-      eventSource.addEventListener(
-        'track',
-        event => {
+    eventSource.addEventListener(
+      'track',
+      event => {
 
-          try {
+        try {
 
-            const data =
-              JSON.parse(event.data);
+          updateTrack(
+            JSON.parse(event.data)
+          );
 
-            updateTrack(data);
+        } catch (error) {
 
-          }
-
-          catch (error) {
-
-            console.error(
-              'Erreur SSE :',
-              error
-            );
-
-          }
+          console.error(
+            'Erreur SSE :',
+            error
+          );
 
         }
-      );
 
-
-      eventSource.onerror = () => {
-
-        eventSource.close();
-
-        setTimeout(
-          connectStream,
-          2000
-        );
-
-      };
-
-    }
-
-
-    connectStream();
+      }
+    );
 
   </script>
 
