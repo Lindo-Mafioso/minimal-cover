@@ -2,152 +2,246 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <style>
+
+    /* ========================================
+       BASE
+    ======================================== */
 
     * {
       box-sizing: border-box;
     }
 
+
     html,
     body {
       width: 100%;
       height: 100%;
+
       margin: 0;
+      padding: 0;
+
       overflow: hidden;
 
-      background: #000;
+      background: #090909;
 
       font-family:
         -apple-system,
         BlinkMacSystemFont,
         "SF Pro Display",
+        "SF Pro Text",
         "Segoe UI",
         sans-serif;
+
+      color: white;
     }
 
 
-    /* =========================
-       LECTEUR
-    ========================= */
+    /* ========================================
+       FOND FLOUTÉ
+    ======================================== */
+
+    #background {
+
+      position: fixed;
+
+      /*
+        On dépasse volontairement
+        de l'écran pour éviter
+        les bords blancs causés
+        par le flou.
+      */
+
+      top: -10%;
+      left: -10%;
+
+      width: 120%;
+      height: 120%;
+
+      background-image: none;
+
+      background-size: cover;
+      background-position: center;
+
+      filter:
+        blur(45px)
+        saturate(120%);
+
+      transform: scale(1.12);
+
+      opacity: 0.72;
+
+      transition:
+        background-image 0.8s ease,
+        opacity 0.8s ease;
+
+      z-index: 0;
+    }
+
+
+    /* ========================================
+       COUCHE SOMBRE
+    ======================================== */
+
+    #overlay {
+
+      position: fixed;
+
+      inset: 0;
+
+      background:
+
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.30),
+          rgba(0, 0, 0, 0.58)
+        );
+
+      backdrop-filter:
+        blur(3px);
+
+      -webkit-backdrop-filter:
+        blur(3px);
+
+      z-index: 1;
+    }
+
+
+    /* ========================================
+       VIGNETTE
+
+       Assombrit légèrement
+       les bords de l'écran.
+    ======================================== */
+
+    #vignette {
+
+      position: fixed;
+
+      inset: 0;
+
+      pointer-events: none;
+
+      background:
+
+        radial-gradient(
+          ellipse at center,
+          transparent 35%,
+          rgba(0, 0, 0, 0.42) 100%
+        );
+
+      z-index: 2;
+    }
+
+
+    /* ========================================
+       PLAYER
+    ======================================== */
 
     #player {
+
+      position: relative;
+
+      z-index: 3;
+
       width: 100%;
       height: 100%;
 
       display: flex;
+
       flex-direction: column;
 
       align-items: center;
       justify-content: center;
 
-      gap: 16px;
-      padding: 24px;
+      padding: 40px;
 
       opacity: 0;
-      transform: translateY(8px);
+
+      transform:
+        translateY(12px);
 
       transition:
-        opacity 0.4s ease,
-        transform 0.4s ease;
+        opacity 0.5s ease,
+        transform 0.5s ease;
     }
+
 
     #player.visible {
+
       opacity: 1;
-      transform: translateY(0);
+
+      transform:
+        translateY(0);
+
     }
 
 
-    /* =========================
-       LIQUID GLASS SOMBRE
-    ========================= */
+    /* ========================================
+       CONTENEUR PRINCIPAL
+    ======================================== */
 
-    .glass {
-      position: relative;
+    #content {
 
-      /*
-        Verre sombre :
-        beaucoup moins clair
-        que la version précédente.
-      */
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.075),
-          rgba(255, 255, 255, 0.025)
+      width:
+        min(
+          90vw,
+          520px
         );
 
-      backdrop-filter:
-        blur(28px)
-        saturate(120%);
+      display: flex;
 
-      -webkit-backdrop-filter:
-        blur(28px)
-        saturate(120%);
+      flex-direction: column;
+
+      align-items: center;
+
+    }
+
+
+    /* ========================================
+       POCHETTE
+    ======================================== */
+
+    #artwork-container {
+
+      width:
+        min(
+          58vw,
+          390px
+        );
+
+      aspect-ratio: 1 / 1;
+
+      border-radius: 24px;
+
+      overflow: hidden;
+
+      background:
+        rgba(0, 0, 0, 0.25);
+
+      box-shadow:
+
+        0 25px 60px
+        rgba(0, 0, 0, 0.48),
+
+        0 2px 10px
+        rgba(0, 0, 0, 0.25);
 
       border:
+
         1px solid
         rgba(255, 255, 255, 0.16);
 
-      box-shadow:
-        0 18px 45px
-        rgba(0, 0, 0, 0.75),
-
-        inset
-        0 1px 0
-        rgba(255, 255, 255, 0.06);
     }
 
-
-    /*
-      Reflet extrêmement discret.
-    */
-
-    .glass::before {
-      content: "";
-
-      position: absolute;
-      inset: 0;
-
-      border-radius: inherit;
-
-      pointer-events: none;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.035),
-          transparent 30%,
-          transparent 75%
-        );
-    }
-
-
-    /* =========================
-       PANNEAU POCHETTE
-    ========================= */
-
-    #artwork-panel {
-      width: min(27vw, 310px);
-      aspect-ratio: 1 / 1;
-
-      padding: 18px;
-
-      border-radius: 30px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-
-    /* =========================
-       POCHETTE
-    ========================= */
 
     #artwork {
+
       width: 100%;
       height: 100%;
 
@@ -155,370 +249,609 @@
 
       object-fit: cover;
 
-      border-radius: 18px;
-
       opacity: 0;
 
-      transform: scale(0.98);
+      transform:
+        scale(1.03);
 
       transition:
-        opacity 0.4s ease,
-        transform 0.4s ease;
 
-      box-shadow:
-        0 10px 25px
-        rgba(0, 0, 0, 0.55);
+        opacity 0.5s ease,
+
+        transform 0.7s ease;
+
     }
+
 
     #artwork.loaded {
+
       opacity: 1;
-      transform: scale(1);
+
+      transform:
+        scale(1);
+
     }
 
 
-    /* =========================
-       PANNEAU INFORMATIONS
-    ========================= */
+    /* ========================================
+       INFORMATIONS
+    ======================================== */
 
-    #info-panel {
-      width: min(27vw, 310px);
+    #info {
 
-      border-radius: 26px;
+      width: 100%;
 
-      padding:
-        20px
-        22px
-        18px;
+      margin-top: 28px;
 
       text-align: center;
+
     }
 
 
-    /* =========================
+    /* ========================================
        TITRE
-    ========================= */
+    ======================================== */
 
     #title {
-      color: #fff;
+
+      color: white;
 
       font-size:
-        clamp(18px, 1.6vw, 25px);
+
+        clamp(
+          23px,
+          3vw,
+          34px
+        );
 
       font-weight: 700;
 
-      letter-spacing: -0.02em;
+      line-height: 1.15;
+
+      letter-spacing:
+        -0.03em;
 
       white-space: nowrap;
+
       overflow: hidden;
+
       text-overflow: ellipsis;
+
+      text-shadow:
+
+        0 2px 14px
+        rgba(0, 0, 0, 0.35);
+
     }
 
 
-    /* =========================
+    /* ========================================
        ARTISTE
-    ========================= */
+    ======================================== */
 
     #artist {
-      margin-top: 6px;
+
+      margin-top: 8px;
 
       color:
-        rgba(255, 255, 255, 0.55);
+
+        rgba(
+          255,
+          255,
+          255,
+          0.72
+        );
 
       font-size:
-        clamp(14px, 1.1vw, 17px);
+
+        clamp(
+          16px,
+          1.8vw,
+          21px
+        );
+
+      font-weight: 400;
+
+      letter-spacing:
+        -0.01em;
 
       white-space: nowrap;
+
       overflow: hidden;
+
       text-overflow: ellipsis;
+
+      text-shadow:
+
+        0 2px 12px
+        rgba(0, 0, 0, 0.3);
+
     }
 
 
-    /* =========================
+    /* ========================================
        PROGRESSION
-    ========================= */
+    ======================================== */
 
     #progress-container {
-      margin-top: 18px;
 
       width: 100%;
+
+      margin-top: 30px;
+
     }
 
 
-    /* BARRE DE FOND */
+    /* BARRE */
 
     #progress-track {
+
       position: relative;
 
       width: 100%;
+
       height: 4px;
 
       border-radius: 999px;
 
       background:
-        rgba(255, 255, 255, 0.16);
+
+        rgba(
+          255,
+          255,
+          255,
+          0.26
+        );
 
       overflow: visible;
+
     }
 
 
     /* PARTIE ÉCOULÉE */
 
     #progress-fill {
+
       width: 0%;
+
       height: 100%;
 
       border-radius: inherit;
 
       background:
-        rgba(255, 255, 255, 0.88);
+
+        rgba(
+          255,
+          255,
+          255,
+          0.92
+        );
 
       transition:
-        width 0.5s linear;
+
+        width 0.4s linear;
+
     }
 
 
     /* CURSEUR */
 
     #progress-thumb {
+
       position: absolute;
 
       top: 50%;
       left: 0%;
 
-      width: 9px;
-      height: 9px;
+      width: 11px;
+      height: 11px;
 
       border-radius: 50%;
 
-      background: #fff;
+      background: white;
 
       transform:
-        translate(-50%, -50%);
+
+        translate(
+          -50%,
+          -50%
+        );
 
       box-shadow:
-        0 0 8px
-        rgba(255, 255, 255, 0.35);
+
+        0 2px 8px
+        rgba(0, 0, 0, 0.35);
 
       transition:
-        left 0.5s linear;
+
+        left 0.4s linear;
+
     }
 
 
-    /* =========================
+    /* ========================================
        TEMPS
-    ========================= */
+    ======================================== */
 
     #time-row {
+
       display: flex;
 
-      justify-content: space-between;
+      justify-content:
+        space-between;
 
-      margin-top: 8px;
+      align-items: center;
+
+      margin-top: 10px;
 
       color:
-        rgba(255, 255, 255, 0.48);
 
-      font-size: 12px;
+        rgba(
+          255,
+          255,
+          255,
+          0.68
+        );
+
+      font-size: 13px;
+
+      font-weight: 400;
 
       font-variant-numeric:
+
         tabular-nums;
-    }
-
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 900px) {
-
-      #artwork-panel,
-      #info-panel {
-        width: min(42vw, 310px);
-      }
 
     }
 
 
-    @media (max-width: 600px) {
+    /* ========================================
+       PETITS ÉCRANS
+    ======================================== */
+
+    @media (
+      max-width: 700px
+    ) {
 
       #player {
-        gap: 14px;
+
+        padding:
+          30px
+          24px;
+
       }
 
-      #artwork-panel {
-        width: min(70vw, 290px);
 
-        padding: 16px;
+      #artwork-container {
 
-        border-radius: 26px;
+        width:
+
+          min(
+            78vw,
+            360px
+          );
+
       }
 
-      #info-panel {
-        width: min(70vw, 290px);
+
+      #info {
+
+        margin-top: 22px;
+
+      }
+
+
+      #progress-container {
+
+        margin-top: 24px;
+
       }
 
     }
 
   </style>
+
 </head>
 
 
 <body>
 
-  <div id="player">
+
+  <!-- =====================================
+       FOND
+  ====================================== -->
+
+  <div
+    id="background"
+  ></div>
 
 
-    <!-- PANNEAU POCHETTE -->
+  <div
+    id="overlay"
+  ></div>
+
+
+  <div
+    id="vignette"
+  ></div>
+
+
+
+  <!-- =====================================
+       PLAYER
+  ====================================== -->
+
+  <main
+    id="player"
+  >
 
     <div
-      id="artwork-panel"
-      class="glass"
+      id="content"
     >
 
-      <img
-        id="artwork"
-        src=""
-        alt="Pochette"
+
+      <!-- =================================
+           POCHETTE
+      ================================== -->
+
+      <div
+        id="artwork-container"
       >
 
-    </div>
-
-
-
-    <!-- PANNEAU INFORMATIONS -->
-
-    <div
-      id="info-panel"
-      class="glass"
-    >
-
-
-      <!-- TITRE -->
-
-      <div id="title">
-        En attente...
-      </div>
-
-
-      <!-- ARTISTE -->
-
-      <div id="artist"></div>
-
-
-
-      <!-- PROGRESSION -->
-
-      <div id="progress-container">
-
-        <div id="progress-track">
-
-          <div id="progress-fill"></div>
-
-          <div id="progress-thumb"></div>
-
-        </div>
-
-
-        <!-- TEMPS -->
-
-        <div id="time-row">
-
-          <span id="current-time">
-            0:00
-          </span>
-
-          <span id="duration">
-            0:00
-          </span>
-
-        </div>
+        <img
+          id="artwork"
+          src=""
+          alt="Pochette de l'album"
+        >
 
       </div>
 
 
+
+      <!-- =================================
+           INFORMATIONS
+      ================================== -->
+
+      <div
+        id="info"
+      >
+
+
+        <div
+          id="title"
+        >
+          En attente...
+        </div>
+
+
+        <div
+          id="artist"
+        ></div>
+
+
+
+        <!-- =============================
+             PROGRESSION
+        ============================== -->
+
+        <div
+          id="progress-container"
+        >
+
+
+          <div
+            id="progress-track"
+          >
+
+            <div
+              id="progress-fill"
+            ></div>
+
+
+            <div
+              id="progress-thumb"
+            ></div>
+
+          </div>
+
+
+
+          <!-- ===========================
+               TEMPS
+          ============================ -->
+
+          <div
+            id="time-row"
+          >
+
+            <span
+              id="current-time"
+            >
+              0:00
+            </span>
+
+
+            <span
+              id="duration"
+            >
+              0:00
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
     </div>
 
-  </div>
+
+  </main>
 
 
 
   <script>
 
-    /* =========================
+
+    /* =====================================
        ÉLÉMENTS
-    ========================= */
+    ====================================== */
 
     const player =
-      document.getElementById('player');
+      document.getElementById(
+        'player'
+      );
+
+
+    const background =
+      document.getElementById(
+        'background'
+      );
+
 
     const artwork =
-      document.getElementById('artwork');
+      document.getElementById(
+        'artwork'
+      );
+
 
     const title =
-      document.getElementById('title');
+      document.getElementById(
+        'title'
+      );
+
 
     const artist =
-      document.getElementById('artist');
+      document.getElementById(
+        'artist'
+      );
+
 
     const progressFill =
-      document.getElementById('progress-fill');
+      document.getElementById(
+        'progress-fill'
+      );
+
 
     const progressThumb =
-      document.getElementById('progress-thumb');
+      document.getElementById(
+        'progress-thumb'
+      );
+
 
     const currentTimeElement =
-      document.getElementById('current-time');
+      document.getElementById(
+        'current-time'
+      );
+
 
     const durationElement =
-      document.getElementById('duration');
+      document.getElementById(
+        'duration'
+      );
 
 
-    /* =========================
-       DONNÉES ACTUELLES
-    ========================= */
+
+    /* =====================================
+       ÉTAT ACTUEL
+    ====================================== */
 
     let currentArtwork = '';
 
-    let currentPosition = 0;
+    let trackPosition = 0;
 
-    let currentDuration = 0;
+    let trackDuration = 0;
 
-    let lastUpdate = Date.now();
+    let positionUpdatedAt =
+      Date.now();
 
 
-    /* =========================
-       FORMAT TEMPS
-    ========================= */
+
+    /* =====================================
+       NORMALISATION DES SECONDES
+
+       Certains systèmes peuvent envoyer
+       des millisecondes.
+    ====================================== */
+
+    function normalizeTime(value) {
+
+      const number =
+        Number(value) || 0;
+
+
+      /*
+        Si la valeur est très grande,
+        on suppose qu'elle est
+        en millisecondes.
+      */
+
+      if (number > 10000) {
+
+        return number / 1000;
+
+      }
+
+
+      return number;
+
+    }
+
+
+
+    /* =====================================
+       FORMAT DU TEMPS
+    ====================================== */
 
     function formatTime(seconds) {
 
       seconds =
         Math.max(
           0,
-          Math.floor(seconds || 0)
+          Math.floor(
+            seconds || 0
+          )
         );
 
+
       const minutes =
-        Math.floor(seconds / 60);
+        Math.floor(
+          seconds / 60
+        );
+
 
       const remainingSeconds =
         seconds % 60;
 
+
       return (
-        minutes +
-        ':' +
-        String(remainingSeconds).padStart(
+
+        minutes
+
+        +
+
+        ':'
+
+        +
+
+        String(
+          remainingSeconds
+        ).padStart(
           2,
           '0'
         )
+
       );
 
     }
 
 
-    /* =========================
-       POCHETTE
-    ========================= */
+
+    /* =====================================
+       CHARGEMENT DE LA POCHETTE
+    ====================================== */
 
     function updateArtwork(url) {
 
@@ -526,13 +859,18 @@
         !url ||
         url === currentArtwork
       ) {
+
         return;
+
       }
 
 
       currentArtwork = url;
 
-      artwork.classList.remove('loaded');
+
+      artwork.classList.remove(
+        'loaded'
+      );
 
 
       const image =
@@ -541,16 +879,43 @@
 
       image.onload = () => {
 
+
+        /*
+          Image principale
+        */
+
         artwork.src = url;
 
 
-        requestAnimationFrame(() => {
+        /*
+          Même image pour
+          le fond flouté.
+        */
 
-          artwork.classList.add(
-            'loaded'
-          );
+        background.style.backgroundImage =
 
-        });
+          `url("${url}")`;
+
+
+        requestAnimationFrame(
+          () => {
+
+            artwork.classList.add(
+              'loaded'
+            );
+
+          }
+        );
+
+
+      };
+
+
+      image.onerror = () => {
+
+        console.error(
+          'Impossible de charger la pochette.'
+        );
 
       };
 
@@ -560,78 +925,165 @@
     }
 
 
-    /* =========================
-       PROGRESSION
-    ========================= */
 
-    function updateProgress() {
+    /* =====================================
+       POSITION ACTUELLE
+    ====================================== */
+
+    function getCurrentPosition() {
+
+      if (
+        trackDuration <= 0
+      ) {
+
+        return 0;
+
+      }
+
+
+      const elapsed =
+
+        (
+          Date.now()
+          -
+          positionUpdatedAt
+        )
+
+        / 1000;
+
+
+      return Math.min(
+
+        trackDuration,
+
+        trackPosition
+        +
+        elapsed
+
+      );
+
+    }
+
+
+
+    /* =====================================
+       AFFICHAGE PROGRESSION
+    ====================================== */
+
+    function renderProgress() {
+
+      const position =
+        getCurrentPosition();
+
 
       let percentage = 0;
 
 
-      if (currentDuration > 0) {
+      if (
+        trackDuration > 0
+      ) {
 
         percentage =
+
           Math.min(
+
             100,
+
             Math.max(
+
               0,
+
               (
-                currentPosition /
-                currentDuration
-              ) * 100
+                position
+                /
+                trackDuration
+              )
+
+              *
+              100
+
             )
+
           );
 
       }
 
 
       progressFill.style.width =
+
         percentage + '%';
 
 
       progressThumb.style.left =
+
         percentage + '%';
 
 
       currentTimeElement.textContent =
+
         formatTime(
-          currentPosition
+          position
         );
 
 
       durationElement.textContent =
+
         formatTime(
-          currentDuration
+          trackDuration
         );
 
     }
 
 
-    /* =========================
-       MISE À JOUR MORCEAU
-    ========================= */
+
+    /* =====================================
+       MISE À JOUR DU MORCEAU
+    ====================================== */
 
     function updateTrack(data) {
 
-      if (!data) return;
+      if (!data) {
 
+        return;
+
+      }
+
+
+      /* TITRE */
 
       title.textContent =
-        data.title ||
+
+        data.title
+
+        ||
+
         'Titre inconnu';
 
 
+
+      /* ARTISTE */
+
       artist.textContent =
-        data.artist ||
+
+        data.artist
+
+        ||
+
         '';
 
 
+
+      /* POCHETTE */
+
       const cover =
 
-        data.coverUrl ||
+        data.coverUrl
 
-        data.artwork ||
+        ||
+
+        data.artwork
+
+        ||
 
         '';
 
@@ -645,66 +1097,94 @@
       }
 
 
-      /*
-        Position actuelle.
 
-        Plusieurs noms possibles
-        sont testés.
-      */
+      /* =================================
+         POSITION
 
-      const position =
+         Plusieurs noms sont testés
+         pour rester compatible.
+      ================================== */
 
-        data.position ??
+      const rawPosition =
 
-        data.currentTime ??
+        data.position
 
-        data.elapsed ??
+        ??
 
-        data.progress ??
+        data.currentTime
 
-        0;
+        ??
 
+        data.elapsed
 
-      /*
-        Durée totale.
+        ??
 
-        Plusieurs noms possibles
-        sont testés.
-      */
+        data.progress
 
-      const duration =
-
-        data.duration ??
-
-        data.totalDuration ??
-
-        data.length ??
+        ??
 
         0;
 
 
-      /*
-        Mise à jour uniquement
-        si les données existent.
-      */
+
+      /* =================================
+         DURÉE
+      ================================== */
+
+      const rawDuration =
+
+        data.duration
+
+        ??
+
+        data.totalDuration
+
+        ??
+
+        data.length
+
+        ??
+
+        0;
+
+
+      const newDuration =
+
+        normalizeTime(
+          rawDuration
+        );
+
+
+      const newPosition =
+
+        normalizeTime(
+          rawPosition
+        );
+
 
       if (
-        duration > 0
+        newDuration > 0
       ) {
 
-        currentPosition =
-          Number(position) || 0;
+        trackDuration =
+          newDuration;
 
-        currentDuration =
-          Number(duration) || 0;
 
-        lastUpdate =
+        trackPosition =
+          newPosition;
+
+
+        positionUpdatedAt =
           Date.now();
 
-        updateProgress();
+
+        renderProgress();
 
       }
 
+
+
+      /* AFFICHAGE */
 
       player.classList.add(
         'visible'
@@ -713,89 +1193,80 @@
     }
 
 
-    /* =========================
-       ANIMATION DE LA BARRE
-    ========================= */
 
-    setInterval(() => {
+    /* =====================================
+       ANIMATION DE LA PROGRESSION
+    ====================================== */
 
-      if (
-        currentDuration > 0
-      ) {
+    setInterval(
 
-        const now =
-          Date.now();
+      renderProgress,
 
+      500
 
-        const elapsedSeconds =
-
-          (now - lastUpdate)
-          / 1000;
+    );
 
 
-        const estimatedPosition =
 
-          currentPosition +
-          elapsedSeconds;
-
-
-        if (
-          estimatedPosition <=
-          currentDuration
-        ) {
-
-          currentPosition =
-            estimatedPosition;
-
-          lastUpdate =
-            now;
-
-          updateProgress();
-
-        }
-
-      }
-
-    }, 1000);
-
-
-    /* =========================
+    /* =====================================
        CHARGEMENT INITIAL
-    ========================= */
+    ====================================== */
 
-    fetch('/api/now-playing')
+    fetch(
+      '/api/now-playing'
+    )
 
       .then(
+
         response =>
+
           response.json()
+
       )
 
       .then(
-        updateTrack
-      )
 
-      .catch(
-        error => {
+        data => {
 
-          console.error(
-            'Erreur now-playing :',
-            error
+          updateTrack(
+            data
           );
 
         }
+
+      )
+
+      .catch(
+
+        error => {
+
+          console.error(
+
+            'Erreur now-playing :',
+
+            error
+
+          );
+
+        }
+
       );
 
 
-    /* =========================
-       STREAM EN DIRECT
-    ========================= */
+
+    /* =====================================
+       FLUX EN DIRECT
+    ====================================== */
 
     function connectStream() {
 
+
       const eventSource =
+
         new EventSource(
           '/api/stream'
         );
+
 
 
       eventSource.addEventListener(
@@ -806,7 +1277,9 @@
 
           try {
 
+
             const data =
+
               JSON.parse(
                 event.data
               );
@@ -816,13 +1289,17 @@
               data
             );
 
+
           }
 
           catch (error) {
 
             console.error(
-              'Erreur SSE :',
+
+              'Erreur du flux :',
+
               error
+
             );
 
           }
@@ -832,14 +1309,22 @@
       );
 
 
+
+      /* =================================
+         RECONNEXION
+      ================================== */
+
       eventSource.onerror = () => {
 
         eventSource.close();
 
 
         setTimeout(
+
           connectStream,
+
           2000
+
         );
 
       };
@@ -847,9 +1332,12 @@
     }
 
 
+
     connectStream();
 
+
   </script>
+
 
 </body>
 </html>
